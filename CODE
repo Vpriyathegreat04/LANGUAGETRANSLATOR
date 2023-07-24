@@ -1,0 +1,27 @@
+!pip install transformers
+!pip install torch torchvision torchaudio
+!pip install sentencepiece
+from transformers import MarianMTModel, MarianTokenizer
+
+def translate_text(input_text, source_language, target_language):
+    # Load the MarianMT model and tokenizer
+    model_name = f'Helsinki-NLP/opus-mt-{source_language}-{target_language}'
+    model = MarianMTModel.from_pretrained(model_name)
+    tokenizer = MarianTokenizer.from_pretrained(model_name)
+
+    # Tokenize the input text
+    inputs = tokenizer(input_text, return_tensors="pt")
+
+    # Generate the translation
+    translated_ids = model.generate(**inputs, max_length=100)
+    translated_text = tokenizer.decode(translated_ids[0], skip_special_tokens=True)
+
+    return translated_text
+
+if __name__ == "__main__":
+    source_language = "en"  # English
+    target_language = "es"  # Spanish
+    input_text = "Hello, how are you?"
+
+    translated_text = translate_text(input_text, source_language, target_language)
+    print(f"Translated text: {translated_text}")
